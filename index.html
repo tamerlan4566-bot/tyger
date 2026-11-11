@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Tyger</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --text-main: #f5f5f5;
+            --text-accent: #ff6b35;
+            --tiger-orange: #ff4500;
+            --gold: #f4a261;
+            --dark-gray: #1a1a1a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ember {
+            position: absolute;
+            background: var(--tiger-orange);
+            border-radius: 50%;
+            opacity: 0;
+            filter: blur(1px);
+            animation: float-up linear infinite;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 1rem;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(13,13,13,0) 100%);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
+        }
+
+        .author {
+            font-size: 1rem;
+            color: var(--gold);
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 1rem auto 2rem;
+            z-index: 10;
+            position: relative;
+        }
+
+        .lang-label {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #888;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lang-label.active {
+            color: var(--text-accent);
+            text-shadow: 0 0 5px rgba(255, 107, 53, 0.4);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--dark-gray);
+            transition: .4s;
+            border-radius: 30px;
+            border: 1px solid #333;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 3px;
+            background-color: var(--tiger-orange);
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--tiger-orange);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(28px);
+            background-color: var(--gold);
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        main {
+            flex-grow: 1;
+            position: relative;
+            z-index: 10;
+            padding: 0 1.5rem 4rem;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .poem-container {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .poem-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stanza {
+            margin-bottom: 2rem;
+            text-align: center;
+            line-height: 1.8;
+            font-size: 1.2rem;
+        }
+
+        .stanza p {
+            margin: 0;
+        }
+
+        .translation-credit {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.85rem;
+            color: #666;
+            text-align: center;
+            margin-top: 3rem;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.8rem;
+            color: #444;
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(13,13,13,0) 100%);
+        }
+
+        @media (min-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .stanza { font-size: 1.4rem; line-height: 2; margin-bottom: 2.5rem;}
+            .author { font-size: 1.2rem; }
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d0d0d">
+    <link rel="apple-touch-icon" href="icon.png">
+</head>
+<body>
+    <div id="particles"></div>
+
+    <header>
+        <h1>The Tyger</h1>
+        <div class="author">William Blake (1794)</div>
+        
+        <div class="toggle-container">
+            <span class="lang-label active" id="label-en">English</span>
+            <label class="switch">
+                <input type="checkbox" id="lang-toggle">
+                <span class="slider"></span>
+            </label>
+            <span class="lang-label" id="label-ru">Русский</span>
+        </div>
+    </header>
+
+    <main>
+        <div id="english" class="poem-container active">
+            <div class="stanza">
+                <p>Tyger Tyger, burning bright,</p>
+                <p>In the forests of the night;</p>
+                <p>What immortal hand or eye,</p>
+                <p>Could frame thy fearful symmetry?</p>
+            </div>
+            
+            <div class="stanza">
+                <p>In what distant deeps or skies,</p>
+                <p>Burnt the fire of thine eyes?</p>
+                <p>On what wings dare he aspire?</p>
+                <p>What the hand, dare sieze the fire?</p>
+            </div>
+
+            <div class="stanza">
+                <p>And what shoulder, & what art,</p>
+                <p>Could twist the sinews of thy heart?</p>
+                <p>And when thy heart began to beat,</p>
+                <p>What dread hand? & what dread feet?</p>
+            </div>
+
+            <div class="stanza">
+                <p>What the hammer? what the chain,</p>
+                <p>In what furnace was thy brain?</p>
+                <p>What the anvil? what dread grasp,</p>
+                <p>Dare its deadly terrors clasp!</p>
+            </div>
+
+            <div class="stanza">
+                <p>When the stars threw down their spears</p>
+                <p>And water'd heaven with their tears:</p>
+                <p>Did he smile his work to see?</p>
+                <p>Did he who made the Lamb make thee?</p>
+            </div>
+
+            <div class="stanza">
+                <p>Tyger Tyger burning bright,</p>
+                <p>In the forests of the night:</p>
+                <p>What immortal hand or eye,</p>
+                <p>Dare frame thy fearful symmetry?</p>
+            </div>
+        </div>
+
+        <div id="russian" class="poem-container">
+            <div class="stanza">
+                <p>Тигр, о тигр, светло горящий</p>
+                <p>В глубине полночной чащи,</p>
+                <p>Кем задуман огневой</p>
+                <p>Соразмерный образ твой?</p>
+            </div>
+
+            <div class="stanza">
+                <p>В небесах или глубинах</p>
+                <p>Тлел огонь очей звериных?</p>
+                <p>Где создатель обитал?</p>
+                <p>Чьими крыльями махал?</p>
+            </div>
+
+            <div class="stanza">
+                <p>Чьи работают плеча,</p>
+                <p>Чье искусство палача</p>
+                <p>Свило мышцы в эти комья?</p>
+                <p>А как дрогнули немотья,</p>
+                <p>Что за ноги, что за руки</p>
+                <p>Сжали сердце в адской муке?</p>
+            </div>
+
+            <div class="stanza">
+                <p>Из какого молотка</p>
+                <p>Цепь твоя была ковка?</p>
+                <p>В чьем горниле мозг твой бился?</p>
+                <p>И на чьей наковальне ты родился?</p>
+            </div>
+
+            <div class="stanza">
+                <p>Звезды сдали, копья бросив,</p>
+                <p>Небо слезными оросив;</p>
+                <p>Усмехнулся ль Он, взирая?</p>
+                <p>Тот ли, Агнца сотворяя,</p>
+                <p>Сотворил и твой оскал?</p>
+            </div>
+
+            <div class="stanza">
+                <p>Тигр, о тигр, светло горящий</p>
+                <p>В глубине полночной чащи,</p>
+                <p>Чьей бессмертной здесь рукой</p>
+                <p>Создан грозный образ твой?</p>
+            </div>
+
+            <div class="translation-credit">
+                Перевод: Константин Бальмонт
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Tyger PWA
+    </footer>
+
+    <script>
+        const toggle = document.getElementById('lang-toggle');
+        const engDiv = document.getElementById('english');
+        const rusDiv = document.getElementById('russian');
+        const labelEn = document.getElementById('label-en');
+        const labelRu = document.getElementById('label-ru');
+
+        toggle.addEventListener('change', function() {
+            if (this.checked) {
+                engDiv.classList.remove('active');
+                setTimeout(() => {
+                    engDiv.style.display = 'none';
+                    rusDiv.style.display = 'block';
+                    setTimeout(() => rusDiv.classList.add('active'), 50);
+                }, 500);
+                
+                labelEn.classList.remove('active');
+                labelRu.classList.add('active');
+            } else {
+                rusDiv.classList.remove('active');
+                setTimeout(() => {
+                    rusDiv.style.display = 'none';
+                    engDiv.style.display = 'block';
+                    setTimeout(() => engDiv.classList.add('active'), 50);
+                }, 500);
+                
+                labelRu.classList.remove('active');
+                labelEn.classList.add('active');
+            }
+        });
+
+        function createEmbers() {
+            const container = document.getElementById('particles');
+            const emberCount = 30;
+
+            for (let i = 0; i < emberCount; i++) {
+                const ember = document.createElement('div');
+                ember.classList.add('ember');
+                
+                const size = Math.random() * 4 + 1;
+                const posX = Math.random() * 100;
+                const delay = Math.random() * 10;
+                const duration = Math.random() * 10 + 5;
+
+                ember.style.width = `${size}px`;
+                ember.style.height = `${size}px`;
+                ember.style.left = `${posX}vw`;
+                ember.style.animationDelay = `${delay}s`;
+                ember.style.animationDuration = `${duration}s`;
+
+                const colors = ['#ff4500', '#f4a261', '#ff0000', '#ffa500'];
+                ember.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                container.appendChild(ember);
+            }
+        }
+
+        window.onload = createEmbers;
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .catch(err => console.log('SW fail:', err));
+            });
+        }
+    </script>
+</body>
+</html>
